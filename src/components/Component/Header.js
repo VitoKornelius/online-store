@@ -1,7 +1,7 @@
 import React from "react";
+import PropTypes from 'prop-types'; // Додаємо імпорт PropTypes
 import SearchBar from "./SearchBar";
 import "../../styles/Header.css";
-import PropTypes from 'prop-types';
 
 const Header = ({ onSearch }) => {
   return (
@@ -15,7 +15,7 @@ const Header = ({ onSearch }) => {
         {/* Назва сайту */}
         <h1 className="site-title">VINTAGE CARS CLUB</h1>
 
-
+        {/* Поле пошуку */}
         <div className="search-box">
           <SearchBar onSearch={onSearch} /> {/* Додаємо SearchBar */}
         </div>

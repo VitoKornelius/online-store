@@ -1,35 +1,46 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import '../../styles/SearchBar.css';
 import PropTypes from 'prop-types';
+import '../../styles/SearchBar.css';
 
 const SearchBar = ({ onSearch }) => {
   const [query, setQuery] = useState('');
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.get(`http://localhost:5000/api/search?q=${query}`);
-      onSearch(response.data);
-    } catch (error) {
-      console.error('Помилка пошуку:', error);
+  const handleInputChange = async (e) => {
+    const newQuery = e.target.value;
+    setQuery(newQuery);
+
+    if (newQuery.trim() !== '') {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/search?q=${newQuery}`);
+        onSearch(response.data);
+      } catch (error) {
+        console.error('Помилка пошуку:', error);
+      }
+    } else {
+      // Якщо поле пусте, повертаємо всі товари
+      try {
+        const response = await axios.get('http://localhost:5000/api/products');
+        onSearch(response.data);
+      } catch (error) {
+        console.error('Помилка завантаження даних:', error);
+      }
     }
   };
 
   return (
-    <form onSubmit={handleSearch}>
+    <div className="search-bar">
       <input
         type="text"
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={handleInputChange}
         placeholder="Пошук товарів..."
+        className="search-input"
       />
-      <button type="submit">Пошук</button>
-    </form>
+    </div>
   );
 };
 
-// Валідація пропсів для onSearch
 SearchBar.propTypes = {
   onSearch: PropTypes.func.isRequired,
 };
