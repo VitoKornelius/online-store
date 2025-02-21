@@ -1,24 +1,23 @@
 /* Основной контейнер футера */
 .footer {
-  width: 100vw; /* Растягиваем на всю ширину экрана */
+  width: 100%; /* Растягиваем на всю ширину экрана */
   background-color: #68799c;
   color: white;
   padding: 10px 0;
-  display: flex;
+  display:block;
   flex-direction: column; /* Включаем колоночное расположение */
   align-items: center; /* Выровнять элементы по центру */
   text-align: center;
 }
 
 /* Контейнер содержимого */
-.footer .container {
+.footer-container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  padding: 0 20px;
 }
 
 /* Логотип и описание */

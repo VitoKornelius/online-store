@@ -3,6 +3,7 @@
     npm install axios
     npm install eslint prettier eslint-config-prettier eslint-plugin-prettier --save-dev
     npm install express pg dotenv cors
+    npm install bcrypt
 
 
 docker 

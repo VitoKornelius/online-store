@@ -1,0 +1,48 @@
+/* Стилі для форми входу */
+.login-form-container {
+    position:absolute;
+    width: 400px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 18px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #333;
+  }
+  
+  .login-close-button:hover {
+    color: red;
+  }
+  
+  .login-form-group {
+    margin-bottom: 15px;
+  }
+  
+  .login-form-group label {
+    display: block;
+    font-weight: bold;
+  }
+  
+  .login-form-group input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .login-error-message {
+    color: red;
+    font-size: 14px;
+  }
+  

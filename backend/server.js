@@ -3,16 +3,28 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import pkg from 'pg';
+import bcrypt from 'bcrypt';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
+// Отримання __dirname для ES6 модулів
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Ініціалізація
 dotenv.config();
 const { Pool } = pkg;
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000; // Використовуємо порт з .env або 5000 за замовчуванням
+const SALT_ROUNDS = 10;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/images', express.static(path.join(__dirname, 'images'))); // Обслуговування статичних зображень
 
 // Підключення до PostgreSQL
 const pool = new Pool({
@@ -44,7 +56,12 @@ app.get('/api/categories', async (req, res) => {
 app.get('/api/products', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM products');
-    res.json(result.rows);
+    // Додаємо шлях до зображення для кожного товару
+    const products = result.rows.map(product => ({
+      ...product,
+      image_url: `/images/${product.id}.jpg`, // Припускаємо, що зображення називається як ID
+    }));
+    res.json(products);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
@@ -59,12 +76,31 @@ app.get('/api/products/:id', async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Product not found' });
     }
-    res.json(result.rows[0]);
+    const product = result.rows[0];
+
+    // Зчитування зображення з файлової системи та кодування в base64
+    const imagePath = path.join(__dirname, 'images', `${product.id}.jpg`);
+    try {
+      if (fs.existsSync(imagePath)) {
+        const image = fs.readFileSync(imagePath);
+        const base64Image = image.toString('base64');
+        product.image_base64 = base64Image;
+      } else {
+        product.image_base64 = null; // Або встановіть значення за замовчуванням
+        console.log(`Image not found for product ${id}`);
+      }
+    } catch (fileError) {
+      console.error('Помилка зчитування зображення:', fileError);
+      return res.status(500).json({ error: 'Internal server error while reading image' });
+    }
+
+    res.json(product);
   } catch (err) {
-    console.error(err);
+    console.error('Помилка отримання товару:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 // 4. Додати новий товар
 app.post('/api/products', async (req, res) => {
@@ -74,7 +110,9 @@ app.post('/api/products', async (req, res) => {
       'INSERT INTO products (name, description, price, category_id) VALUES ($1, $2, $3, $4) RETURNING *',
       [name, description, price, category_id]
     );
-    res.status(201).json(result.rows[0]);
+    const newProduct = result.rows[0];
+    newProduct.image_url = `/images/${newProduct.id}.jpg`; // Шлях до зображення
+    res.status(201).json(newProduct);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
@@ -93,7 +131,9 @@ app.put('/api/products/:id', async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Product not found' });
     }
-    res.json(result.rows[0]);
+    const updatedProduct = result.rows[0];
+    updatedProduct.image_url = `/images/${updatedProduct.id}.jpg`; // Шлях до зображення
+    res.json(updatedProduct);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
@@ -115,7 +155,23 @@ app.delete('/api/products/:id', async (req, res) => {
   }
 });
 
-// Пошук по сайту
+// 7. Отримання товарів за категорією
+app.get('/api/categories/:id/products', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('SELECT * FROM products WHERE category_id = $1', [id]);
+    const products = result.rows.map(product => ({
+      ...product,
+      image_url: `/images/${product.id}.jpg`, // Шлях до зображення
+    }));
+    res.json(products);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// 8. Пошук по сайту
 app.get('/api/search', async (req, res) => {
   const searchQuery = req.query.q;
   try {
@@ -123,10 +179,69 @@ app.get('/api/search', async (req, res) => {
       'SELECT * FROM products WHERE name ILIKE $1 OR description ILIKE $1',
       [`%${searchQuery}%`]
     );
-    res.json(result.rows);
+    const products = result.rows.map(product => ({
+      ...product,
+      image_url: `/images/${product.id}.jpg`, // Шлях до зображення
+    }));
+    res.json(products);
   } catch (err) {
     console.error('Помилка пошуку товарів:', err);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// 9. Реєстрація користувача
+app.post('/api/register', async (req, res) => {
+  const { username, email, password, phone } = req.body;
+
+  try {
+    const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ success: false, message: 'Користувач з таким email вже існує' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+    const phoneValue = phone || null;
+
+    const result = await pool.query(
+      'INSERT INTO users (name, email, password_hash, phone, user_type) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [username, email, hashedPassword, phoneValue, 'customer']
+    );
+
+    res.status(201).json({ success: true, message: 'Реєстрація пройшла успішно', user: result.rows[0] });
+  } catch (err) {
+    console.error('Помилка реєстрації:', err);
+    res.status(500).json({ success: false, message: 'Внутрішня помилка сервера' });
+  }
+});
+
+// 10. Вхід користувача
+app.post('/api/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (user.rows.length === 0) {
+      return res.status(400).json({ success: false, message: 'Користувача не знайдено' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.rows[0].password_hash);
+    if (!isPasswordValid) {
+      return res.status(400).json({ success: false, message: 'Невірний пароль' });
+    }
+
+    const userData = {
+      id: user.rows[0].id,
+      name: user.rows[0].name,
+      email: user.rows[0].email,
+      phone: user.rows[0].phone,
+      user_type: user.rows[0].user_type,
+    };
+
+    res.json({ success: true, message: 'Вхід успішний', user: userData });
+  } catch (err) {
+    console.error('Помилка входу:', err);
+    res.status(500).json({ success: false, message: 'Внутрішня помилка сервера' });
   }
 });
 

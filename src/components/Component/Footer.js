@@ -4,7 +4,7 @@ import "../../styles/Footer.css";
 const Footer = () => {
   return (
     <footer className="footer">
-      <div className="container">
+      <div className="footer-container">
         {/* Логотип и описание */}
         <div>
           <h2 className="logo">Магазин</h2>

@@ -1,41 +1,73 @@
-import React from "react";
-import PropTypes from 'prop-types'; // Додаємо імпорт PropTypes
-import SearchBar from "./SearchBar";
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 import "../../styles/Header.css";
+import LoginForm from "../LoginForm";
+import SearchBar from "./SearchBar";
+import RegistrationForm from "../RegistrationForm";
 
 const Header = ({ onSearch }) => {
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState("");
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUsername("");
+  };
+  const handleOpenLogin = () => {
+    setIsLoginOpen(true);
+    setIsRegisterOpen(false);
+  };
+  const handleRegisterOpen = () => {
+    setIsRegisterOpen(true);
+    setIsLoginOpen(false);
+  };
+  const handleLoginSuccess = (userName) => {
+    setIsLoggedIn(true);
+    setUsername(userName);
+    setIsLoginOpen(false);
+  };
+
   return (
     <header className="header">
-      <div className="container">
-        {/* Логотип */}
-        <div className="logo-container">
-          <img src="/logo.png" alt="Vintage Cars Club" className="logo" />
-        </div>
-
-        {/* Назва сайту */}
-        <h1 className="site-title">VINTAGE CARS CLUB</h1>
-
-        {/* Поле пошуку */}
-        <div className="search-box">
-          <SearchBar onSearch={onSearch} /> {/* Додаємо SearchBar */}
+      <div className="auth-buttons-container">
+        <div className="auth-buttons">
+          {isLoggedIn ? (
+            <div className="user-info">
+              <span>{username}</span>
+              <button className="auth-button" onClick={handleLogout}>Вийти</button>
+            </div>
+          ) : (
+            <>
+              <button className="auth-button" onClick={handleOpenLogin}>Увійти</button>
+              <button className="auth-button" onClick={handleRegisterOpen}>Реєстрація</button>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Меню навігації */}
-      <nav className="nav">
+      <div className="nav-container">
         <ul className="nav-list">
           <li><a href="/" className="nav-item home">Головна</a></li>
           <li><a href="/scale-models" className="nav-item">Масштабні моделі</a></li>
           <li><a href="/collectibles" className="nav-item">Збірні моделі</a></li>
           <li><a href="/cart" className="nav-item">Кошик</a></li>
         </ul>
-      </nav>
+      </div>
+
+      <div className="search-container styled-search">
+        <SearchBar onSearch={onSearch} />
+      </div>
+
+      {isRegisterOpen && <RegistrationForm onClose={() => setIsRegisterOpen(false)} onRegisterSuccess={handleLoginSuccess} />}
+      {isLoginOpen && <LoginForm onClose={() => setIsLoginOpen(false)} onLoginSuccess={handleLoginSuccess} />}
     </header>
   );
 };
 
 Header.propTypes = {
-  onSearch: PropTypes.func.isRequired, // Додаємо валідацію пропсів
+  onSearch: PropTypes.func.isRequired,
 };
 
 export default Header;
