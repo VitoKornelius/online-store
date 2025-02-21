@@ -1,96 +1,131 @@
+body {
+  background-color: #f0f4f8;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
 .product-page {
-    max-width: 1000px;
-    margin: 0 auto;
-    font-family: Arial, sans-serif;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    display: flex;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  max-width: 100%; /* Изменено на 100% */
+  margin: 0 auto; /* Центрирование */
+}
+
+.product-content-product-page {
+  display: flex;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  transition: box-shadow 0.3s ease;
+  width: 100%; /* Добавлено для максимальной ширины */
+  max-width: 1200px; /* Ограничена максимальная ширина */
+  margin: 0 auto; /* Центрирование контента */
+}
+
+.product-image-container-product-page {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  margin-right: 20px; /* Відстань між зображенням і інформацією */
+}
+
+.main-product-image-product-page {
+  width: 100%;
+  max-width: 100%; /* Обеспечивает максимальную ширину изображения */
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+.thumbnail-wrapper-product-page {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  position: absolute; /* Фіксація позиції */
+  bottom: -40px; /* Відстань від основного зображення */
+  left: 50%; /* Центрування мініатюр */
+  transform: translateX(-50%); /* Центрування по горизонталі */
+}
+
+.thumbnail-image-product-page {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.thumbnail-image-product-page:hover {
+  transform: scale(1.1);
+  border-color: #d46f00;
+}
+
+.info-section-product-page {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.title-product-page {
+  font-size: 32px; /* Збільшено розмір шрифту заголовка */
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.description-product-page {
+  font-size: 18px; /* Збільшено розмір шрифту опису */
+  color: #666;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.price-product-page {
+  font-size: 24px; /* Збільшено розмір шрифту ціни */
+  font-weight: bold;
+  color: #d46f00;
+  margin-bottom: 15px;
+}
+
+.stock-status-product-page {
+  font-size: 18px; /* Збільшено розмір шрифту статусу наявності */
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.stock-status-product-page.out-of-stock {
+  color: red;
+  font-weight: bold;
+}
+
+.button-order-product-page {
+  background-color: #d46f00;
+  color: #fff;
+  border: none;
+  padding: 15px 25px; /* Збільшено відступи кнопки */
+  font-size: 20px; /* Збільшено розмір шрифту кнопки */
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.button-order-product-page:hover {
+  background-color: #a85600;
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .product-content-product-page {
     flex-direction: column;
+  }
+  .info-section-product-page {
     align-items: center;
+    padding-left: 0;
   }
-  
-  .product-name {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    text-align: center;
-    border-bottom: 2px solid #f4b400;
-    padding-bottom: 10px;
-    width: 100%;
-    margin-bottom: 20px;
-  }
-  
-  .product-container {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    width: 100%;
-  }
-  
-  .product-image-container {
-    flex: 1;
-    display: flex;
-    justify-content: flex-start;
-  }
-  
-  .product-image {
-    width: 300px;
-    border: 2px solid #000;
-    border-radius: 8px;
-  }
-  
-  .product-details {
-    flex: 2;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  
-  .product-description {
-    font-size: 16px;
-    color: #555;
-    margin-bottom: 15px;
-  }
-  
-  .product-info {
-    font-size: 16px;
-    color: #333;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .product-price {
-    font-size: 18px;
-    font-weight: bold;
-    color: #e53935;
-    margin-bottom: 15px;
-  }
-  
-  .product-stock {
-    font-size: 16px;
-    color: #388e3c;
-    margin-bottom: 10px;
-  }
-  
-  .out-of-stock {
-    color: #e53935;
-  }
-  
-  .add-to-cart-btn {
-    background-color: #f4b400;
-    color: white;
-    font-size: 18px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    display: block;
-    margin-top: 20px;
-    width: 200px;
-  }
-  
-  .add-to-cart-btn:hover {
-    background-color: #e69500;
-  }
+}

@@ -25,16 +25,16 @@ const ProductCard = ({ id }) => {
   };
 
   console.log(productInfo);
-  // Перевірка наявності base64-зображення
-  const base64ImageUrl = productInfo?.image_base64 ? `data:image/jpeg;base64,${productInfo.image_base64}` : null;
+  // Перевірка наявності base64-зображень
+  const base64Images = productInfo?.image_base64?.map((img) => `data:image/jpeg;base64,${img}`) || [];
 
   return (
     <div className="product-card" onClick={handleClick}>
       <div className="product-image-container">
-        {base64ImageUrl ? (
-          <img src={base64ImageUrl} alt={productInfo?.name} className="product-image" />
+        {base64Images.length > 0 ? (
+          <img src={base64Images[0]} alt={productInfo?.name} className="product-image" />
         ) : (
-          <div className="no-image"></div> // Додано порожній div для випадку, якщо зображення відсутнє
+          <div className="no-image"></div>
         )}
       </div>
       <h2 className="product-name">{productInfo?.name ?? "Ім'я товару"}</h2>

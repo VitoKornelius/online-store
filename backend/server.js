@@ -68,7 +68,6 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
-// 3. Отримати товар за ID
 app.get('/api/products/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -78,20 +77,25 @@ app.get('/api/products/:id', async (req, res) => {
     }
     const product = result.rows[0];
 
-    // Зчитування зображення з файлової системи та кодування в base64
-    const imagePath = path.join(__dirname, 'images', `${product.id}.jpg`);
-    try {
-      if (fs.existsSync(imagePath)) {
-        const image = fs.readFileSync(imagePath);
-        const base64Image = image.toString('base64');
-        product.image_base64 = base64Image;
-      } else {
-        product.image_base64 = null; // Або встановіть значення за замовчуванням
-        console.log(`Image not found for product ${id}`);
-      }
-    } catch (fileError) {
-      console.error('Помилка зчитування зображення:', fileError);
-      return res.status(500).json({ error: 'Internal server error while reading image' });
+    // Обробка всіх зображень з масиву image_urls
+    if (product.image_urls && Array.isArray(product.image_urls)) {
+      product.image_base64 = product.image_urls.map((imageName) => {
+        const imagePath = path.join(__dirname, 'images', imageName);
+        if (fs.existsSync(imagePath)) {
+          try {
+            const image = fs.readFileSync(imagePath);
+            return image.toString('base64');
+          } catch (fileError) {
+            console.error(`Помилка зчитування зображення ${imageName}:`, fileError);
+            return null; // Або якесь значення за замовчуванням
+          }
+        } else {
+          console.log(`Image not found: ${imageName}`);
+          return null;
+        }
+      }).filter(img => img !== null); // Видаляємо null значення
+    } else {
+      product.image_base64 = [];
     }
 
     res.json(product);
@@ -100,6 +104,7 @@ app.get('/api/products/:id', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 // 4. Додати новий товар
