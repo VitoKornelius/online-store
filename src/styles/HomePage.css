@@ -1,6 +1,12 @@
 /* HomePage.css */
 
-.main-content {
+.home-page{
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.home-page-main-content {
   margin-top: 80px; /* Такий самий відступ, як висота хедера */
   display: flex;
   flex-direction: row;

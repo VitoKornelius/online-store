@@ -1,14 +1,23 @@
+
+/*оформити стиль сторінки*/
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import Header from "../components/Component/Header";
+import Footer from "../components/Component/Footer";
+import { AuthContext } from "../contexts/AuthContext";
+import { useContext } from "react";
 import "../styles/ProductPage.css";
 
 const ProductPage = () => {
+  const { user } = useContext(AuthContext);
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -20,13 +29,40 @@ const ProductPage = () => {
         }
       } catch (err) {
         setError(err.message);
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchProduct();
-  }, [productId]);
+    const checkIfInCart = async () => {
+      try {
+        if (!user) return;
+        const response = await axios.get(`http://localhost:5000/api/cart/${user.id}`);
+        const cartItems = response.data;
+        if (cartItems.some(item => item.id === parseInt(productId))) {
+          setAddedToCart(true);
+        }
+      } catch (err) {
+        console.error("Помилка перевірки кошика:", err);
+      }
+    };
+
+    fetchProduct().then(() => checkIfInCart()).finally(() => setLoading(false));
+  }, [productId, user]);
+
+  const handleAddToCart = async () => {
+    try {
+      const response = await axios.put(`http://localhost:5000/api/cart/${user.id}`, {
+        product_id: product.id,
+        user_id: user.id,
+      });
+
+      if (response.status === 201) {
+        setAddedToCart(true);
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Помилка при додаванні товару в кошик");
+    }
+  };
 
   if (loading) return <div>Завантаження...</div>;
   if (error) return <div>Помилка: {error}</div>;
@@ -41,17 +77,18 @@ const ProductPage = () => {
 
   return (
     <div className="product-page">
-      <div className="product-content-product-page">
+      <Header />
+      <div className="product-page-main-content">
         <div className="product-image-container-product-page">
           <img src={mainImage} alt={product.name} className="main-product-image-product-page" />
           {product.image_base64?.length > 1 && (
             <div className="thumbnail-wrapper-product-page">
               {product.image_base64.filter(img => img !== selectedImage).map((img, index) => (
-                <img 
-                  key={index} 
-                  src={`data:image/jpeg;base64,${img}`} 
-                  alt={`Thumbnail ${index}`} 
-                  className="thumbnail-image-product-page" 
+                <img
+                  key={index}
+                  src={`data:image/jpeg;base64,${img}`}
+                  alt={`Thumbnail ${index}`}
+                  className="thumbnail-image-product-page"
                   onClick={() => handleImageClick(img)}
                 />
               ))}
@@ -60,7 +97,7 @@ const ProductPage = () => {
         </div>
         <div className="info-section-product-page">
           <h2 className="title-product-page">{product.name}</h2>
-          <p className="description-product-page">{product.description}</p>
+          <p className="description-product-page">{product.detailed_description}</p>
           <p className="price-product-page">Ціна: <span className="price">{product.price} грн</span></p>
           {product.stock_quantity > 0 ? (
             <p className="stock-status-product-page">В наявності: {product.stock_quantity}</p>
@@ -70,9 +107,16 @@ const ProductPage = () => {
           <p className="product-scale">Масштаб: {product.scale}</p>
           <p className="product-material">Матеріал: {product.material}</p>
           <p className="product-release-year">Рік випуску: {product.release_year}</p>
-          <button className="button-order-product-page">Додати у кошик</button>
+          <button
+            className="button-order-product-page"
+            onClick={handleAddToCart}
+            disabled={addedToCart}
+          >
+            {addedToCart ? "Товар додано в кошик" : "Додати у кошик"}
+          </button>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

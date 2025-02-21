@@ -19,7 +19,6 @@ export default function HomePage() {
       try {
         const productResponse = await axios.get("http://localhost:5000/api/products");
         setProducts(productResponse.data);
-        console.log(productResponse.data)
         setFilteredProducts(productResponse.data);
 
         const bannerResponse = await axios.get("http://localhost:5000/api/banner");
@@ -55,19 +54,19 @@ export default function HomePage() {
   };
 
   return (
-    <>
-       <Header onSearch={handleSearchResults} /> {/* Передаємо onSearch */}
-      <div className="main-content">
+    <div className="home-page">
+       <Header onSearch={handleSearchResults} />
+      <div className="home-page-main-content">
           <div className="mt-4">
             {banner && (
-              <img src={banner} alt="Banner" className="rounded-lg shadow-lg" />
+              <img src={banner} alt="Banner" className="rounded-lg shadow-lg" /> 
             )}
           </div>
           <div className="content-wrapper">
             <Categories
               selectedCategoryId={selectedCategoryId}
               onCategoryClick={handleCategoryClick}
-            /> {/* Додаємо компонент Categories */}
+            /> 
               </div>
             <div className="products-list">
               {loading ? (
@@ -84,8 +83,8 @@ export default function HomePage() {
                 </div>
               )}
             </div>
-          </div>
+        </div>
       <Footer /> 
-    </>
+    </div>
   );
 }

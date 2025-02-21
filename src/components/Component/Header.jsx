@@ -1,31 +1,35 @@
-import React, { useState } from "react";
+
+// перевірити інформацію
+
+import React, { useState, useContext } from "react";
 import PropTypes from "prop-types";
 import "../../styles/Header.css";
 import LoginForm from "../LoginForm";
 import SearchBar from "./SearchBar";
 import RegistrationForm from "../RegistrationForm";
+import { AuthContext } from "../../contexts/AuthContext"; // Імпортуємо AuthContext
 
 const Header = ({ onSearch }) => {
+  const { user, login, logout } = useContext(AuthContext); // Використовуємо AuthContext
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState("");
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUsername("");
+    logout(); // Викликаємо logout із контексту
   };
+
   const handleOpenLogin = () => {
     setIsLoginOpen(true);
     setIsRegisterOpen(false);
   };
+
   const handleRegisterOpen = () => {
     setIsRegisterOpen(true);
     setIsLoginOpen(false);
   };
+
   const handleLoginSuccess = (userName) => {
-    setIsLoggedIn(true);
-    setUsername(userName);
+    login({ name: userName }); // Викликаємо login із контексту
     setIsLoginOpen(false);
   };
 
@@ -33,9 +37,9 @@ const Header = ({ onSearch }) => {
     <header className="header">
       <div className="auth-buttons-container">
         <div className="auth-buttons">
-          {isLoggedIn ? (
+          {user ? (
             <div className="user-info">
-              <span>{username}</span>
+              <span>{user.name}</span>
               <button className="auth-button" onClick={handleLogout}>Вийти</button>
             </div>
           ) : (

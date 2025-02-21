@@ -1,57 +1,48 @@
-body {
-  background-color: #f0f4f8;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-}
 
-.product-page {
+
+.product-page{
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  max-width: 100%; /* Изменено на 100% */
-  margin: 0 auto; /* Центрирование */
+  min-height: 100vh;
 }
-
-.product-content-product-page {
+.product-page-main-content {
   display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px; /* Обмеження максимальної ширини */
+  margin: 0 auto;
   padding: 20px;
-  background-color: #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  transition: box-shadow 0.3s ease;
-  width: 100%; /* Добавлено для максимальной ширины */
-  max-width: 1200px; /* Ограничена максимальная ширина */
-  margin: 0 auto; /* Центрирование контента */
+  gap: 40px; /* Відступ між фото і текстом */
 }
 
 .product-image-container-product-page {
-  flex: 1;
+  flex: 1; /* Займає 50% ширини */
+  max-width: 500px; /* Максимальна ширина блоку з фото */
   text-align: center;
-  position: relative;
-  margin-right: 20px; /* Відстань між зображенням і інформацією */
 }
 
 .main-product-image-product-page {
-  width: 100%;
-  max-width: 100%; /* Обеспечивает максимальную ширину изображения */
+  width: auto;
+  height: auto;
+  max-height: 500px;
+  object-fit: cover;
   border-radius: 10px;
-  transition: transform 0.3s ease;
+  max-width: 500px;
 }
 
 .thumbnail-wrapper-product-page {
   display: flex;
   gap: 10px;
   justify-content: center;
-  position: absolute; /* Фіксація позиції */
-  bottom: -40px; /* Відстань від основного зображення */
-  left: 50%; /* Центрування мініатюр */
-  transform: translateX(-50%); /* Центрування по горизонталі */
+  margin-top: 15px;
 }
 
 .thumbnail-image-product-page {
-  width: 70px;
-  height: 70px;
+  width: 80px;
+  height: 80px;
   object-fit: cover;
   border: 2px solid #ccc;
   border-radius: 5px;
@@ -65,35 +56,37 @@ body {
 }
 
 .info-section-product-page {
-  flex: 2;
+  flex: 1; /* Займає 50% ширини */
+  max-width: 600px; /* Максимальна ширина текстового блоку */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  padding: 20px;
 }
 
 .title-product-page {
-  font-size: 32px; /* Збільшено розмір шрифту заголовка */
+  font-size: 32px;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   color: #333;
 }
 
 .description-product-page {
-  font-size: 18px; /* Збільшено розмір шрифту опису */
+  font-size: 18px;
   color: #666;
   margin-bottom: 20px;
   line-height: 1.5;
 }
 
 .price-product-page {
-  font-size: 24px; /* Збільшено розмір шрифту ціни */
+  font-size: 24px;
   font-weight: bold;
   color: #d46f00;
   margin-bottom: 15px;
 }
 
 .stock-status-product-page {
-  font-size: 18px; /* Збільшено розмір шрифту статусу наявності */
+  font-size: 18px;
   color: #333;
   margin-bottom: 15px;
 }
@@ -104,11 +97,13 @@ body {
 }
 
 .button-order-product-page {
+  width: 100%;
+  max-width: 300px;
   background-color: #d46f00;
   color: #fff;
   border: none;
-  padding: 15px 25px; /* Збільшено відступи кнопки */
-  font-size: 20px; /* Збільшено розмір шрифту кнопки */
+  padding: 15px;
+  font-size: 20px;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s;
@@ -120,12 +115,20 @@ body {
   transform: scale(1.05);
 }
 
+/* Адаптивність для мобільних */
 @media (max-width: 768px) {
   .product-content-product-page {
     flex-direction: column;
+    align-items: center;
   }
+  
+  .product-image-container-product-page,
+  .info-section-product-page {
+    max-width: 100%;
+    text-align: center;
+  }
+
   .info-section-product-page {
     align-items: center;
-    padding-left: 0;
   }
 }

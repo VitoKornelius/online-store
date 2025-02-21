@@ -24,15 +24,13 @@ const ProductCard = ({ id }) => {
     navigate(`/product/${id}`);
   };
 
-  console.log(productInfo);
-  // Перевірка наявності base64-зображень
   const base64Images = productInfo?.image_base64?.map((img) => `data:image/jpeg;base64,${img}`) || [];
 
   return (
     <div className="product-card" onClick={handleClick}>
       <div className="product-image-container">
         {base64Images.length > 0 ? (
-          <img src={base64Images[0]} alt={productInfo?.name} className="product-image" />
+          <img src={base64Images[0]} alt={productInfo?.name} className="product-image" /> /*виправити контур фото*/
         ) : (
           <div className="no-image"></div>
         )}
@@ -47,10 +45,7 @@ const ProductCard = ({ id }) => {
       ) : (
         <p className="product-stock out-of-stock">Немає в наявності</p>
       )}
-      <p className="product-scale">Масштаб: {productInfo?.scale ?? "Масштаб"}</p>
-      <p className="product-material">Матеріал: {productInfo?.material ?? "Матеріал"}</p>
-      <p className="product-release-year">Рік випуску: {productInfo?.release_year ?? "Рік випуску"}</p>
-      <button className="add-to-cart-btn">Додати у кошик</button>
+      <button className="add-to-cart-btn">Додати у кошик</button> {/*обробити кнопку*/}
     </div>
   );
 };

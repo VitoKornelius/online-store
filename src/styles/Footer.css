@@ -8,6 +8,7 @@
   flex-direction: column; /* Включаем колоночное расположение */
   align-items: center; /* Выровнять элементы по центру */
   text-align: center;
+  margin-top: auto;
 }
 
 /* Контейнер содержимого */
@@ -82,4 +83,10 @@
   font-size: 14px;
   width: 100%;
   text-align: center;
+}
+.fixed-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
 }

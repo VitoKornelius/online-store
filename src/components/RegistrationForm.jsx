@@ -22,7 +22,7 @@ const RegistrationForm = ({ onClose, onRegisterSuccess }) => {
       username,
       email,
       password,
-      phone  // Додаємо телефон до даних для відправки на сервер
+      phone
     };
 
     fetch('http://localhost:5000/api/register', {

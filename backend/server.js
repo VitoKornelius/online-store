@@ -250,6 +250,88 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// 11. Додати у кошик
+app.put('/api/cart/:id', async (req, res) => {
+  const { product_id, user_id } = req.body;
+  
+  try {
+    // Перевіряємо, чи товар уже є в кошику для цього користувача
+    const existingItem = await pool.query(
+      'SELECT * FROM carts WHERE product_id = $1 AND user_id = $2',
+      [product_id, user_id]
+    );
+
+    if (existingItem.rows.length > 0) {
+      return res.status(400).json({ error: 'Product already in cart' });
+    }
+
+    // Якщо товару немає в кошику, додаємо новий запис
+    const result = await pool.query(
+      'INSERT INTO carts (product_id, user_id) VALUES ($1, $2) RETURNING *',
+      [product_id, user_id]
+    );
+
+    const newCartItem = result.rows[0];
+    res.status(201).json(newCartItem);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/api/cart/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Отримуємо всі товари з кошика для цього користувача
+    const result = await pool.query(
+      'SELECT p.id, p.name, p.price, p.stock_quantity, p.image_urls  ' + 
+      'FROM products p ' + 
+      'JOIN carts c ON p.id = c.product_id ' + 
+      'WHERE c.user_id = $1',
+      [userId]
+    );
+
+    // Якщо товари знайдені, повертаємо їх
+    if (result.rows.length > 0) {
+      res.status(200).json(result.rows);
+    } else {
+      // Якщо кошик порожній, просто повертаємо порожній масив
+      res.status(200).json([]);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// 13. Видалити товар з кошика користувача
+app.delete('/api/cart/:userId/:productId', async (req, res) => {
+  let { userId, productId } = req.params;
+
+  if (isNaN(userId) || isNaN(productId)) {
+    return res.status(400).json({ message: "Invalid user ID or product ID" });
+  }
+
+  try {
+    const result = await pool.query(
+      'DELETE FROM carts WHERE user_id = $1 AND product_id = $2 RETURNING *',
+      [userId, productId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Product not found in cart" });
+    }
+
+    await res.json({ message: "Product removed from cart", deletedItem: result.rows[0] });
+  } catch (error) {
+    console.error("Error deleting product from cart:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
 // Запуск сервера
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);

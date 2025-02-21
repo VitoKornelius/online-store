@@ -28,7 +28,7 @@ const Categories = ({ selectedCategoryId, onCategoryClick }) => {
         </li>
         {categories.map(category => (
           <li key={category.id} className={selectedCategoryId === category.id ? 'active' : ''}>
-            <button onClick={() => onCategoryClick(category.id)}>{category.name}</button> {/* Переконайтеся, що рендерите name */}
+            <button onClick={() => onCategoryClick(category.id)}>{category.name}</button>
           </li>
         ))}
       </ul>

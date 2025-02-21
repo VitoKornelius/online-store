@@ -1,3 +1,6 @@
+
+// перевірити інформацію
+
 import React from "react";
 import "../../styles/Footer.css";
 
@@ -5,13 +8,11 @@ const Footer = () => {
   return (
     <footer className="footer">
       <div className="footer-container">
-        {/* Логотип и описание */}
         <div>
           <h2 className="logo">Магазин</h2>
           <p className="description">Найкращі товари</p>
         </div>
 
-        {/* Навигация */}
         <div>
           <h3 className="title">Навігация</h3>
           <ul className="nav-links">
@@ -20,7 +21,6 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Контакты */}
         <div>
           <h3 className="title">Звязок</h3>
           <p className="contact-info">Email: supportStore@example.com</p>
